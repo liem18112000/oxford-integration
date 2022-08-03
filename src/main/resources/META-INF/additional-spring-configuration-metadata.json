@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "integration.app-id",
+      "type": "java.lang.String",
+      "description": "This is the application ID, you should send with each API request.."
+    },
+    {
+      "name": "integration.app-secret",
+      "type": "java.lang.String",
+      "description": "These are application keys used to authenticate requests."
+    },
+    {
+      "name": "integration.base-url",
+      "type": "java.lang.String",
+      "description": "Consistent part of API requests."
+    },
+    {
+      "name": "integration.request-timeout",
+      "type": "java.time.Duration",
+      "description": "Request timeout duration."
+    }
+  ]
+}

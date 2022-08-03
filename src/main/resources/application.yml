@@ -1,0 +1,29 @@
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
+logging:
+  file:
+    path: ${LOG_PATH:logs}
+    name: ${logging.file.path}/${LOG_FILE:application}.log
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE:application}.%d{dd-MM-yyyy}.%i.log
+      max-file-size: ${LOG_MAX_FILE_SIZE:10MB}
+      max-history: ${LOG_MAX_HISTORY:20}
+  pattern:
+    console: "%green(%d{${ISO8601}}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1.}): %msg%n%throwable"
+integration:
+  app-id: ${INTEGRATION_APP_ID:c0a7dd56}
+  app-secret: ${INTEGRATION_APP_SECRET:3123db157c76373bb3b7979ae367bb13}
+  base-url: ${INTEGRATION_BASE_URL:https://od-api.oxforddictionaries.com/api/v2}
+  request-timeout: ${INTEGRATION_REQUEST_TIMEOUT:30s}
+spring:
+  webflux:
+    base-path: ${SPRING_BASE_PATH:/api/translation/v1}
+  data:
+    mongodb:
+      host: ${DATABASE_HOST:localhost}
+      port: ${DATABASE_PORT:27017}
+      database: ${DATABASE_NAME:oxford-integration}
+
+
