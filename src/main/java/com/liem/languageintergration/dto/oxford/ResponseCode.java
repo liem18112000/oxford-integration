@@ -1,4 +1,4 @@
-package com.liem.languageintergration.dto;
+package com.liem.languageintergration.dto.oxford;
 
 import lombok.Getter;
 import lombok.ToString;

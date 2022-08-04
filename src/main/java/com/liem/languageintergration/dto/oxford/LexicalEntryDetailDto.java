@@ -1,6 +1,7 @@
-package com.liem.languageintergration.dto;
+package com.liem.languageintergration.dto.oxford;
 
 import java.util.List;
+import java.util.Map;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -16,7 +17,7 @@ public class LexicalEntryDetailDto {
   /**
    * The Grammatical features.
    */
-  protected List<GrammaticalFeatureDto> grammaticalFeatures;
+  protected List<Map<String, Object>> pronunciations;
 
   /**
    * The Senses.

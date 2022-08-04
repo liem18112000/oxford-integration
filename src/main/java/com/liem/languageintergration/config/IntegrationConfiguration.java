@@ -38,12 +38,28 @@ public class IntegrationConfiguration {
   @Value("${integration.request-timeout}")
   private Duration requestTimeout;
 
+  /**
+   * The Request retry.
+   */
+  @Value("${integration.request-retry}")
+  private Integer requestRetry;
+
+  /**
+   * The Cache duration.
+   */
+  @Value("${integration.cache-duration}")
+  private Duration cacheDuration;
+
+  /**
+   * The Failed statuses.
+   */
   private final Set<HttpStatus> failedStatuses = Set.of(
-      HttpStatus.BAD_GATEWAY,
       HttpStatus.INTERNAL_SERVER_ERROR,
       HttpStatus.UNAUTHORIZED,
       HttpStatus.FORBIDDEN,
-      HttpStatus.NOT_FOUND
+      HttpStatus.GATEWAY_TIMEOUT,
+      HttpStatus.BAD_GATEWAY,
+      HttpStatus.SERVICE_UNAVAILABLE
   );
 
 }

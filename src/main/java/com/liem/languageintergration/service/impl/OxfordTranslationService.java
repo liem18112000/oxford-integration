@@ -2,26 +2,26 @@ package com.liem.languageintergration.service.impl;
 
 import static com.liem.languageintergration.constants.ClientConstants.APP_ID_HEADER_NAME;
 import static com.liem.languageintergration.constants.ClientConstants.APP_KEY_HEADER_NAME;
+import static com.liem.languageintergration.constants.TranslationServiceRoute.TRANSLATIONS;
 
 import com.liem.languageintergration.config.IntegrationConfiguration;
-import com.liem.languageintergration.dto.EntryDto;
-import com.liem.languageintergration.dto.TranslationDto;
+import com.liem.languageintergration.dto.oxford.EntryDto;
+import com.liem.languageintergration.dto.oxford.TranslationDto;
 import com.liem.languageintergration.excpetions.TranslationException;
 import com.liem.languageintergration.factory.ClientFactory;
 import com.liem.languageintergration.service.TranslationService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ReactiveValueOperations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Mono;
@@ -33,7 +33,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor(onConstructor_={@Autowired})
 public class OxfordTranslationService
-    implements TranslationService<EntryDto, ResponseEntity<TranslationDto>> {
+    implements TranslationService<EntryDto, TranslationDto> {
 
   /**
    * The Client factory.
@@ -46,18 +46,22 @@ public class OxfordTranslationService
   private final IntegrationConfiguration configuration;
 
   /**
+   * The Value operations.
+   */
+  private final ReactiveValueOperations<String, TranslationDto> valueOperations;
+
+  /**
    * Translate translation dto.
    *
    * @param entry the entry
    * @return the translation dto
    */
   @Override
-  public Mono<ResponseEntity<TranslationDto>> translate(final @NotNull @Valid EntryDto entry) {
+  public Mono<TranslationDto> translate(final @NotNull @Valid EntryDto entry) {
     final var timeout = configuration.getRequestTimeout();
-    final var lang = entry.getSourceLang();
-    final var work = entry.getWordId();
-    final var baseUrl = String.format("%s/%s/%s/%s",
-        configuration.getBaseUrl(), "entries", lang, work);
+    final var retry = configuration.getRequestRetry();
+    final var cache = configuration.getCacheDuration();
+    final var baseUrl = buildTranslateBaseUrl(entry);
     final var httpClient = clientFactory.createHttpClient(timeout);
     final var webClient = clientFactory.createReactiveWebClient(httpClient);
     try {
@@ -68,18 +72,33 @@ public class OxfordTranslationService
           .accept(MediaType.APPLICATION_JSON)
           .acceptCharset(StandardCharsets.UTF_8)
           .retrieve()
-          .onStatus(configuration.getFailedStatuses()::contains, clientResponse -> {
+          .onStatus(status -> !status.is2xxSuccessful(), clientResponse -> {
             log.error("Error client response: {}", clientResponse);
             throw new TranslationException(clientResponse.statusCode(), "Error client response");
           })
-          .toEntity(TranslationDto.class)
-          .retry(3)
-          .cache(Duration.ofMinutes(5))
-          .doOnSuccess(dto -> log.info("Request to Oxford success"));
+          .bodyToMono(TranslationDto.class)
+          .retry(retry)
+          .cache(cache)
+          .doOnSuccess(dto -> log.info("Request to Oxford success"))
+          .onErrorResume(Mono::error);
     } catch (URISyntaxException ex) {
       log.error("Create URI failed with base url '{}' : {}", baseUrl, ex.getMessage());
       throw new TranslationException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
+  }
+
+  /**
+   * Build translate base url string.
+   *
+   * @param entry the entry
+   * @return the string
+   */
+  private String buildTranslateBaseUrl(EntryDto entry) {
+    final var sourceLang = entry.getSourceLang();
+    final var targetLang = entry.getTargetLang();
+    final var wordId = entry.getWordId();
+    return String.format("%s/%s/%s/%s/%s",
+        configuration.getBaseUrl(), TRANSLATIONS, sourceLang, targetLang, wordId);
   }
 
   /**

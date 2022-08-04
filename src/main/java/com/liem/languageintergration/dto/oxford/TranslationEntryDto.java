@@ -1,4 +1,4 @@
-package com.liem.languageintergration.dto;
+package com.liem.languageintergration.dto.oxford;
 
 import java.util.List;
 import lombok.Data;

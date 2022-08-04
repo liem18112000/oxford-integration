@@ -19,6 +19,16 @@
       "name": "integration.request-timeout",
       "type": "java.time.Duration",
       "description": "Request timeout duration."
+    },
+    {
+      "name": "integration.request-retry",
+      "type": "java.lang.Integer",
+      "description": "Description for integration.request-retry."
+    },
+    {
+      "name": "integration.cache-duration",
+      "type": "java.time.Duration",
+      "description": "Description for integration.cache-duration."
     }
   ]
 }

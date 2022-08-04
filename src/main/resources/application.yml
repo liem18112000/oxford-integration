@@ -12,12 +12,33 @@ logging:
       max-history: ${LOG_MAX_HISTORY:20}
   pattern:
     console: "%green(%d{${ISO8601}}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1.}): %msg%n%throwable"
+  level:
+    org:
+      springframework:
+        web:
+          TRACE
+    com:
+      liem: TRACE
 integration:
   app-id: ${INTEGRATION_APP_ID:c0a7dd56}
   app-secret: ${INTEGRATION_APP_SECRET:3123db157c76373bb3b7979ae367bb13}
   base-url: ${INTEGRATION_BASE_URL:https://od-api.oxforddictionaries.com/api/v2}
   request-timeout: ${INTEGRATION_REQUEST_TIMEOUT:30s}
+  request-retry: 3
+  cache-duration: 5m
 spring:
+  application:
+    name: oxford-integration
+  cache:
+    redis:
+      time-to-live: 5m
+      use-key-prefix: true
+      key-prefix: oxford_integration_
+    type: redis
+  redis:
+    timeout: 10s
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
   webflux:
     base-path: ${SPRING_BASE_PATH:/api/translation/v1}
   data:

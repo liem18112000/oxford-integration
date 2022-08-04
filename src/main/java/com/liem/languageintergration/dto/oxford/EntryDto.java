@@ -1,4 +1,4 @@
-package com.liem.languageintergration.dto;
+package com.liem.languageintergration.dto.oxford;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -20,6 +20,13 @@ public class EntryDto {
   @NotNull(message = "Source language must not be null")
   @NotBlank(message = "Source language must not be empty")
   protected String sourceLang;
+
+  /**
+   * The Target lang.
+   */
+  @NotNull(message = "Target language must not be null")
+  @NotBlank(message = "Target language must not be empty")
+  protected String targetLang;
 
   /**
    * The Word id.

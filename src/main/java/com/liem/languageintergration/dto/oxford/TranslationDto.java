@@ -1,7 +1,6 @@
-package com.liem.languageintergration.dto;
+package com.liem.languageintergration.dto.oxford;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

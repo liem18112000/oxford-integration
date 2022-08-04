@@ -43,15 +43,10 @@
       <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
 
-    <!-- Spring docs-->
+    <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webflux-ui -->
     <dependency>
       <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-data-rest</artifactId>
-      <version>1.6.9</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-ui</artifactId>
+      <artifactId>springdoc-openapi-webflux-ui</artifactId>
       <version>1.6.9</version>
     </dependency>
 
@@ -75,15 +70,27 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+    </dependency><!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webflux-ui -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-webflux-ui</artifactId>
+      <version>1.6.9</version>
     </dependency>
+
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>1.9.9.1</version>
+    </dependency>
   </dependencies>
 
   <build>
+    <finalName>oxford-integration</finalName>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
