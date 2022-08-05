@@ -8,6 +8,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 
+/**
+ * The type Logging utility.
+ */
 @Slf4j
 public class LoggingUtility {
 

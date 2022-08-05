@@ -25,23 +25,23 @@ import reactor.core.publisher.Mono;
 public class TranslationTrackingCommandServiceImpl implements
     TranslationTrackingCommandService<TranslationTrackingDto> {
 
-    /**
-     * The Repository.
-     */
-    private final TranslationTrackingRepository repository;
+  /**
+   * The Repository.
+   */
+  private final TranslationTrackingRepository repository;
 
-    /**
-     * The Mapper.
-     */
-    private final TranslationTrackingMapper mapper;
+  /**
+   * The Mapper.
+   */
+  private final TranslationTrackingMapper mapper;
 
-    /**
-     * Track translation translate dto.
-     *
-     * @param responseDto the response dto
-     * @return the translation dto
-     */
-    @Override
+  /**
+   * Track translation translate dto.
+   *
+   * @param responseDto the response dto
+   * @return the translation dto
+   */
+  @Override
     public Mono<TranslationTrackingDto> trackTranslation(
         final TranslationTrackingDto responseDto) {
         log.info("Track translation");
@@ -65,14 +65,14 @@ public class TranslationTrackingCommandServiceImpl implements
             .doOnSuccess(dto -> log.info("Track translation success: {}", dto));
     }
 
-    /**
-     * Gets by optional.
-     *
-     * @param responseDto the response dto
-     * @param map         the map
-     * @return the by optional
-     */
-    private String getByOptional(
+  /**
+   * Gets by optional.
+   *
+   * @param responseDto the response dto
+   * @param map         the map
+   * @return the by optional
+   */
+  private String getByOptional(
         final TranslationTrackingDto responseDto,
         final @NotNull Function<TranslationTrackingDto, String> map) {
         return Optional.ofNullable(responseDto).map(map).orElse(StringUtils.EMPTY);

@@ -10,9 +10,18 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+/**
+ * The type Cache configuration.
+ */
 @Configuration
 public class CacheConfiguration {
 
+  /**
+   * Reactive redis template reactive redis template.
+   *
+   * @param factory the factory
+   * @return the reactive redis template
+   */
   @Bean
   public ReactiveRedisTemplate<String, TranslationDto> reactiveRedisTemplate(
       ReactiveRedisConnectionFactory factory) {
@@ -26,6 +35,12 @@ public class CacheConfiguration {
     return new ReactiveRedisTemplate<>(factory, context);
   }
 
+  /**
+   * Reactive value ops reactive value operations.
+   *
+   * @param reactiveRedisTemplate the reactive redis template
+   * @return the reactive value operations
+   */
   @Bean
   public ReactiveValueOperations<String, TranslationDto> reactiveValueOps(
       ReactiveRedisTemplate<String, TranslationDto> reactiveRedisTemplate) {

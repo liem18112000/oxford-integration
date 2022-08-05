@@ -23,23 +23,23 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor_={@Autowired})
 public class TranslationTrackingMapper {
 
-    /**
-     * The Object mapper.
-     */
-    private final ObjectMapper objectMapper;
+  /**
+   * The Object mapper.
+   */
+  private final ObjectMapper objectMapper;
 
-    /**
-     * The Response mapper.
-     */
-    private final TranslationResponseMapper responseMapper;
+  /**
+   * The Response mapper.
+   */
+  private final TranslationResponseMapper responseMapper;
 
-    /**
-     * To entity translation tracking entity.
-     *
-     * @param dto the dto
-     * @return the translation tracking entity
-     */
-    public TranslationTrackingEntity toEntity(final TranslationTrackingDto dto) {
+  /**
+   * To entity translation tracking entity.
+   *
+   * @param dto the dto
+   * @return the translation tracking entity
+   */
+  public TranslationTrackingEntity toEntity(final TranslationTrackingDto dto) {
         return Optional.ofNullable(dto)
             .map(d -> TranslationTrackingEntity.builder()
                 .sourceLanguage(d.getSourceLanguage())
@@ -55,13 +55,13 @@ public class TranslationTrackingMapper {
 
     }
 
-    /**
-     * To dto translation tracking dto.
-     *
-     * @param entity the entity
-     * @return the translation tracking dto
-     */
-    public TranslationTrackingDto toDto(final TranslationTrackingEntity entity) {
+  /**
+   * To dto translation tracking dto.
+   *
+   * @param entity the entity
+   * @return the translation tracking dto
+   */
+  public TranslationTrackingDto toDto(final TranslationTrackingEntity entity) {
         return Optional.ofNullable(entity)
             .map(e -> TranslationTrackingDto.builder()
                 .id(e.getId())
@@ -79,14 +79,14 @@ public class TranslationTrackingMapper {
 
     }
 
-    /**
-     * To dto translation tracking dto.
-     *
-     * @param dto      the dto
-     * @param entryDto the entry dto
-     * @return the translation tracking dto
-     */
-    public TranslationTrackingDto toDto(
+  /**
+   * To dto translation tracking dto.
+   *
+   * @param dto      the dto
+   * @param entryDto the entry dto
+   * @return the translation tracking dto
+   */
+  public TranslationTrackingDto toDto(
         final TranslationDto dto,
         final @NotNull EntryDto entryDto) {
         return Optional.ofNullable(dto)
@@ -106,13 +106,13 @@ public class TranslationTrackingMapper {
             });
     }
 
-    /**
-     * Gets translation.
-     *
-     * @param responseDto the response dto
-     * @return the translation
-     */
-    private String getTranslation(TranslationResponseDto responseDto) {
+  /**
+   * Gets translation.
+   *
+   * @param responseDto the response dto
+   * @return the translation
+   */
+  private String getTranslation(TranslationResponseDto responseDto) {
         try {
             return this.objectMapper
                 .writeValueAsString(responseDto.getTranslations());

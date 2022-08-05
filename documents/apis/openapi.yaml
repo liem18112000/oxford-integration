@@ -26,7 +26,7 @@ paths:
         style: form
       - explode: true
         in: query
-        name: workId
+        name: word
         required: true
         schema:
           type: string
@@ -56,7 +56,7 @@ paths:
         style: form
       - explode: true
         in: query
-        name: workId
+        name: word
         required: true
         schema:
           type: string

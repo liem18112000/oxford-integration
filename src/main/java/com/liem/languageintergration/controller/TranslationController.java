@@ -6,10 +6,13 @@ import com.liem.languageintergration.dto.oxford.EntryDto;
 import com.liem.languageintergration.dto.oxford.TranslationDto;
 import com.liem.languageintergration.dto.responses.ApiResponse;
 import com.liem.languageintergration.dto.responses.TranslationResponseDto;
+import com.liem.languageintergration.dto.tracking.TranslationTrackingDto;
 import com.liem.languageintergration.mapper.TranslationResponseMapper;
 import com.liem.languageintergration.service.TranslationService;
+import com.liem.languageintergration.service.TranslationTrackingQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +28,9 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor(onConstructor_={@Autowired})
 public class TranslationController {
 
+  /**
+   * The Mapper.
+   */
   private final TranslationResponseMapper mapper;
 
   /**
@@ -33,48 +39,46 @@ public class TranslationController {
   private final TranslationService<EntryDto, TranslationDto> translationService;
 
   /**
-   * Translate mono.
-   *
-   * @param sourceLang the source lang
-   * @param targetLang the target lang
-   * @param workId     the work id
-   * @return the mono
+   * The Query service.
    */
-  @GetMapping("raw")
-  public Mono<ResponseEntity<ApiResponse<TranslationDto>>> translateRaw(
-      final @RequestParam String sourceLang,
-      final @RequestParam String targetLang,
-      final @RequestParam String workId) {
-    final var request = EntryDto.builder()
-        .sourceLang(sourceLang.toLowerCase())
-        .targetLang(targetLang.toLowerCase())
-        .wordId(workId.toLowerCase())
-        .build();
-    return this.translationService.translate(request)
-        .map(body -> ResponseEntity.ok(new ApiResponse<>(body)));
-  }
+  private final TranslationTrackingQueryService<TranslationTrackingDto> queryService;
 
   /**
    * Translate mono.
    *
    * @param sourceLang the source lang
    * @param targetLang the target lang
-   * @param workId     the work id
+   * @param word       the word id
    * @return the mono
    */
   @GetMapping
   public Mono<ResponseEntity<ApiResponse<TranslationResponseDto>>> translate(
       final @RequestParam String sourceLang,
       final @RequestParam String targetLang,
-      final @RequestParam String workId) {
+      final @RequestParam String word) {
     final var request = EntryDto.builder()
         .sourceLang(sourceLang.toLowerCase())
         .targetLang(targetLang.toLowerCase())
-        .wordId(workId.toLowerCase())
+        .wordId(word.toLowerCase())
         .build();
     return this.translationService.translate(request)
         .map(this.mapper::toResponse)
         .map(body -> ResponseEntity.ok(new ApiResponse<>(body)));
+  }
+
+  /**
+   * Search tracking mono.
+   *
+   * @param page the page
+   * @param size the size
+   * @return the mono
+   */
+  @GetMapping("tracking")
+  public Mono<ResponseEntity<ApiResponse<Page<TranslationTrackingDto>>>> searchTracking(
+      final @RequestParam(defaultValue = "0") int page,
+      final @RequestParam(defaultValue = "10") int size) {
+    return this.queryService.getAll(page, size)
+        .map(ApiResponse::new).map(ResponseEntity::ok);
   }
 
 }

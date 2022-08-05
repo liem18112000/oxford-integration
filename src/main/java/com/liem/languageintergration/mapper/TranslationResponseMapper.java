@@ -3,7 +3,6 @@ package com.liem.languageintergration.mapper;
 import com.liem.languageintergration.dto.oxford.LexicalEntryDto;
 import com.liem.languageintergration.dto.oxford.SenseDto;
 import com.liem.languageintergration.dto.oxford.TranslationDto;
-import com.liem.languageintergration.dto.oxford.TranslationEntryDto;
 import com.liem.languageintergration.dto.responses.TranslationDetailDto;
 import com.liem.languageintergration.dto.responses.TranslationResponseDto;
 import java.util.ArrayList;

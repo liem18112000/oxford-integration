@@ -16,47 +16,47 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class TranslationTrackingDto implements Serializable {
 
-    /**
-     * The Id.
-     */
-    protected String id;
+  /**
+   * The Id.
+   */
+  protected String id;
 
-    /**
-     * The Source language.
-     */
-    protected String sourceLanguage;
+  /**
+   * The Source language.
+   */
+  protected String sourceLanguage;
 
-    /**
-     * The Word in source language.
-     */
-    protected String wordInSourceLanguage;
+  /**
+   * The Word in source language.
+   */
+  protected String wordInSourceLanguage;
 
-    /**
-     * The Target language.
-     */
-    protected String targetLanguage;
+  /**
+   * The Target language.
+   */
+  protected String targetLanguage;
 
-    /**
-     * The Translation.
-     */
-    protected String translation;
+  /**
+   * The Translation.
+   */
+  protected String translation;
 
-    /**
-     * The Is translated success.
-     */
-    @Builder.Default
+  /**
+   * The Is translated success.
+   */
+  @Builder.Default
     protected boolean translatedSuccess = true;
 
-    /**
-     * The Extra information.
-     */
-    @Builder.Default
+  /**
+   * The Extra information.
+   */
+  @Builder.Default
     protected String extraInformation = ApiResponseCode.SUCCESS.getMessage();
 
-    /**
-     * The Translated at.
-     */
-    @Builder.Default
+  /**
+   * The Translated at.
+   */
+  @Builder.Default
     protected String translatedAt = LocalDateTime.now().toString();
 
 }

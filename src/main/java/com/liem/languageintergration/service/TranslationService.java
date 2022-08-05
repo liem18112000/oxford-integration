@@ -4,6 +4,9 @@ import reactor.core.publisher.Mono;
 
 /**
  * The interface Translation service.
+ *
+ * @param <ENTRY>     the type parameter
+ * @param <TRANSLATE> the type parameter
  */
 public interface TranslationService<ENTRY, TRANSLATE> {
 

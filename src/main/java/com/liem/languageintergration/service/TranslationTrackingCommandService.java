@@ -9,11 +9,11 @@ import reactor.core.publisher.Mono;
  */
 public interface TranslationTrackingCommandService<DTO> {
 
-    /**
-     * Track translation translate dto.
-     *
-     * @param responseDto the response dto
-     * @return the translation dto
-     */
-    Mono<DTO> trackTranslation(DTO responseDto);
+  /**
+   * Track translation translate dto.
+   *
+   * @param responseDto the response dto
+   * @return the translation dto
+   */
+  Mono<DTO> trackTranslation(DTO responseDto);
 }
