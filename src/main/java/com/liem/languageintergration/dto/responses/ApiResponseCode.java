@@ -21,9 +21,11 @@ public enum ApiResponseCode {
   /**
    * The Server error.
    */
-  SERVER_ERROR("000002", "Server error")
-  ;
+  SERVER_ERROR("000002", "Server error"),
 
+  TRANSLATION_FAILED("000003", "translated failed"),
+
+  MAPPING_FAILED("000004", "Mapping data failed");
   /**
    * The Code.
    */
