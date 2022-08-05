@@ -22,13 +22,12 @@ import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ReactiveValueOperations;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import reactor.core.publisher.Mono;
 
@@ -51,9 +50,25 @@ public class OxfordTranslationService
    */
   private final IntegrationConfiguration configuration;
 
+  /**
+   * The Tracking service.
+   */
   private final TranslationTrackingCommandService<TranslationTrackingDto> trackingService;
 
+  /**
+   * The Tracking mapper.
+   */
   private final TranslationTrackingMapper trackingMapper;
+
+  /**
+   * The Redis template.
+   */
+  private final ReactiveRedisTemplate<String, TranslationDto> redisTemplate;
+
+  /**
+   * The Object mapper.
+   */
+  private final ObjectMapper objectMapper;
 
   /**
    * Translate translation dto.
@@ -65,21 +80,37 @@ public class OxfordTranslationService
   public Mono<TranslationDto> translate(final @NotNull @Valid EntryDto entry) {
     final var retry = configuration.getRequestRetry();
     final var cache = configuration.getCacheDuration();
-    return makeRequest(entry)
-        .onStatus(status -> !status.is2xxSuccessful(), clientResponse -> {
-          log.error("Error client response: {}", clientResponse);
-          throw new TranslationException(clientResponse.statusCode(), "Error client response");
-        })
-        .bodyToMono(TranslationDto.class)
-        .flatMap(dto -> this.trackingService.trackTranslation(
-              this.trackingMapper.toDto(dto, entry.getSourceLang()))
-            .map(res -> dto))
-        .retry(retry)
-        .cache(cache)
-        .doOnSuccess(dto -> log.info("Request to Oxford success"))
-        .onErrorResume(Mono::error);
+    final var cacheKey = String.format("%s/%s/%s",
+        entry.getSourceLang(), entry.getTargetLang(), entry.getWordId());
+    return redisTemplate.opsForValue().get(cacheKey)
+        .switchIfEmpty(
+            makeRequest(entry)
+                .onStatus(status -> !status.is2xxSuccessful(), clientResponse -> {
+                  log.error("Error client response: {}", clientResponse);
+                  throw new TranslationException(clientResponse.statusCode(), "Error client response");
+                })
+                .bodyToMono(TranslationDto.class)
+                .flatMap(dto -> this.trackingService.trackTranslation(
+                        this.trackingMapper.toDto(dto, entry))
+                    .map(res -> dto)
+                    .onErrorResume(Mono::error)
+                ).retry(retry)
+                .cache(cache)
+                .doOnSuccess(dto -> {
+                  log.info("Request to Oxford success and cache value");
+                  this.redisTemplate.opsForValue().set(cacheKey, dto, cache)
+                      .doOnSuccess(e -> log.info("Cache value: {}", e)).subscribe();
+                })
+                .onErrorResume(Mono::error)
+        ).doOnSuccess(value -> log.info("Get value from cache: {}", value));
   }
 
+  /**
+   * Make request response spec.
+   *
+   * @param entry the entry
+   * @return the response spec
+   */
   private ResponseSpec makeRequest(
       final @NotNull @Valid EntryDto entry) {
     final var timeout = configuration.getRequestTimeout();

@@ -15,8 +15,8 @@ logging:
   level:
     org:
       springframework:
-        web:
-          TRACE
+        web: TRACE
+        data: TRACE
     com:
       liem: TRACE
 integration:

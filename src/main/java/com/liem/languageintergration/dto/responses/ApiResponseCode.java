@@ -1,6 +1,5 @@
 package com.liem.languageintergration.dto.responses;
 
-import com.liem.languageintergration.excpetions.TranslationException;
 import lombok.Getter;
 
 /**

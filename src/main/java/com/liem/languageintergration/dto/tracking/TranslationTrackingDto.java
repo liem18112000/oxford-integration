@@ -1,6 +1,9 @@
 package com.liem.languageintergration.dto.tracking;
 
+import com.liem.languageintergration.dto.responses.ApiResponseCode;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -41,16 +44,19 @@ public class TranslationTrackingDto implements Serializable {
     /**
      * The Is translated success.
      */
-    protected boolean translatedSuccess;
+    @Builder.Default
+    protected boolean translatedSuccess = true;
 
     /**
      * The Extra information.
      */
-    protected String extraInformation;
+    @Builder.Default
+    protected String extraInformation = ApiResponseCode.SUCCESS.getMessage();
 
     /**
      * The Translated at.
      */
-    protected String translatedAt;
+    @Builder.Default
+    protected String translatedAt = LocalDateTime.now().toString();
 
 }

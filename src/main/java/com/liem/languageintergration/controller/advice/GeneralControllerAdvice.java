@@ -3,6 +3,7 @@ package com.liem.languageintergration.controller.advice;
 import com.liem.languageintergration.dto.responses.ApiResponse;
 import com.liem.languageintergration.dto.responses.ApiResponseCode;
 import com.liem.languageintergration.excpetions.MappingException;
+import com.liem.languageintergration.excpetions.TranslateTrackingException;
 import com.liem.languageintergration.excpetions.TranslationException;
 import java.io.IOException;
 import java.lang.invoke.StringConcatException;
@@ -30,6 +31,7 @@ public class GeneralControllerAdvice {
    * @return the mono
    */
   @ExceptionHandler({
+      TranslateTrackingException.class,
       TranslationException.class
   })
   public Mono<ResponseEntity<ApiResponse<?>>> handleTranslateException(
@@ -47,7 +49,7 @@ public class GeneralControllerAdvice {
    * @return the mono
    */
   @ExceptionHandler({
-      MappingException.class
+      MappingException.class,
   })
   public Mono<ResponseEntity<ApiResponse<?>>> handleMappingException(
       final @NotNull MappingException ex) {
