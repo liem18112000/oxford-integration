@@ -1,5 +1,6 @@
 package com.liem.languageintergration.dto.responses;
 
+import com.liem.languageintergration.excpetions.TranslationException;
 import lombok.Getter;
 
 /**
@@ -23,9 +24,17 @@ public enum ApiResponseCode {
    */
   SERVER_ERROR("000002", "Server error"),
 
-  TRANSLATION_FAILED("000003", "translated failed"),
+  /**
+   * The Translation failed.
+   */
+  TRANSLATION_FAILED("000003", "There is an error while translation"),
 
-  MAPPING_FAILED("000004", "Mapping data failed");
+  /**
+   * The Mapping failed.
+   */
+  MAPPING_FAILED("000004", "There is an error while mapping data")
+  ;
+
   /**
    * The Code.
    */

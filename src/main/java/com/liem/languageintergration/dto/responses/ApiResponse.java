@@ -1,58 +1,30 @@
 package com.liem.languageintergration.dto.responses;
 
-import com.liem.languageintergration.excpetions.TranslationException;
-import lombok.Getter;
+import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * The enum Api response code.
- */
-@Getter
-public enum ApiResponseCode {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ApiResponse<T> {
 
-  /**
-   * Success api response code.
-   */
-  SUCCESS("000000", "Success"),
+  private String code = ApiResponseCode.SUCCESS.getCode();
 
-  /**
-   * The Invalid client params.
-   */
-  INVALID_CLIENT_PARAMS("000001", "Invalid client params"),
+  private String message = ApiResponseCode.SUCCESS.getMessage();
 
-  /**
-   * The Server error.
-   */
-  SERVER_ERROR("000002", "Server error"),
+  private T response;
 
-  /**
-   * The Translation failed.
-   */
-  TRANSLATION_FAILED("000003", "There is an error while translation"),
+  public ApiResponse(T response) {
+    this.response = response;
+  }
 
-  /**
-   * The Mapping failed.
-   */
-  MAPPING_FAILED("000004", "There is an error while mapping data")
-  ;
-
-  /**
-   * The Code.
-   */
-  private final String code;
-
-  /**
-   * The Message.
-   */
-  private final String message;
-
-  /**
-   * Instantiates a new Api response code.
-   *
-   * @param code    the code
-   * @param message the message
-   */
-  ApiResponseCode(String code, String message) {
+  public ApiResponse(String code, String message) {
     this.code = code;
     this.message = message;
   }
+
+  private final String timestamp = LocalDateTime.now().toString();
+
 }
