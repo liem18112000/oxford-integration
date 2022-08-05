@@ -4,12 +4,16 @@ import static com.liem.languageintergration.constants.ClientConstants.APP_ID_HEA
 import static com.liem.languageintergration.constants.ClientConstants.APP_KEY_HEADER_NAME;
 import static com.liem.languageintergration.constants.TranslationServiceRoute.TRANSLATIONS;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liem.languageintergration.config.IntegrationConfiguration;
 import com.liem.languageintergration.dto.oxford.EntryDto;
 import com.liem.languageintergration.dto.oxford.TranslationDto;
+import com.liem.languageintergration.dto.tracking.TranslationTrackingDto;
 import com.liem.languageintergration.excpetions.TranslationException;
 import com.liem.languageintergration.factory.ClientFactory;
+import com.liem.languageintergration.mapper.TranslationTrackingMapper;
 import com.liem.languageintergration.service.TranslationService;
+import com.liem.languageintergration.service.TranslationTrackingCommandService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +28,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import reactor.core.publisher.Mono;
 
 /**
@@ -45,10 +51,9 @@ public class OxfordTranslationService
    */
   private final IntegrationConfiguration configuration;
 
-  /**
-   * The Value operations.
-   */
-  private final ReactiveValueOperations<String, TranslationDto> valueOperations;
+  private final TranslationTrackingCommandService<TranslationTrackingDto> trackingService;
+
+  private final TranslationTrackingMapper trackingMapper;
 
   /**
    * Translate translation dto.
@@ -58,33 +63,45 @@ public class OxfordTranslationService
    */
   @Override
   public Mono<TranslationDto> translate(final @NotNull @Valid EntryDto entry) {
-    final var timeout = configuration.getRequestTimeout();
     final var retry = configuration.getRequestRetry();
     final var cache = configuration.getCacheDuration();
+    return makeRequest(entry)
+        .onStatus(status -> !status.is2xxSuccessful(), clientResponse -> {
+          log.error("Error client response: {}", clientResponse);
+          throw new TranslationException(clientResponse.statusCode(), "Error client response");
+        })
+        .bodyToMono(TranslationDto.class)
+        .flatMap(dto -> this.trackingService.trackTranslation(
+              this.trackingMapper.toDto(dto, entry.getSourceLang()))
+            .map(res -> dto))
+        .retry(retry)
+        .cache(cache)
+        .doOnSuccess(dto -> log.info("Request to Oxford success"))
+        .onErrorResume(Mono::error);
+  }
+
+  private ResponseSpec makeRequest(
+      final @NotNull @Valid EntryDto entry) {
+    final var timeout = configuration.getRequestTimeout();
     final var baseUrl = buildTranslateBaseUrl(entry);
     final var httpClient = clientFactory.createHttpClient(timeout);
     final var webClient = clientFactory.createReactiveWebClient(httpClient);
+    final URI uri;
+
     try {
-      return webClient
-          .get()
-          .uri(new URI(baseUrl))
-          .headers(httpHeaders -> httpHeaders.addAll(this.getAllHeaders()))
-          .accept(MediaType.APPLICATION_JSON)
-          .acceptCharset(StandardCharsets.UTF_8)
-          .retrieve()
-          .onStatus(status -> !status.is2xxSuccessful(), clientResponse -> {
-            log.error("Error client response: {}", clientResponse);
-            throw new TranslationException(clientResponse.statusCode(), "Error client response");
-          })
-          .bodyToMono(TranslationDto.class)
-          .retry(retry)
-          .cache(cache)
-          .doOnSuccess(dto -> log.info("Request to Oxford success"))
-          .onErrorResume(Mono::error);
+      uri = new URI(baseUrl);
     } catch (URISyntaxException ex) {
       log.error("Create URI failed with base url '{}' : {}", baseUrl, ex.getMessage());
       throw new TranslationException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
+
+    return webClient
+        .get()
+        .uri(uri)
+        .headers(httpHeaders -> httpHeaders.addAll(this.getAllHeaders()))
+        .accept(MediaType.APPLICATION_JSON)
+        .acceptCharset(StandardCharsets.UTF_8)
+        .retrieve();
   }
 
   /**
