@@ -57,15 +57,12 @@ public class TranslationTrackingCommandServiceImpl implements
                 Mono.just(responseDto)
                     .map(this.mapper::toEntity)
                     .flatMap(this.repository::save)
-                    .onErrorResume(Mono::error)
             ).map(this.mapper::toDto)
             .onErrorResume(MappingException.class::isInstance, Mono::error)
             .onErrorResume(ex -> !(ex instanceof MappingException),
                 throwable -> Mono.error(new TranslateTrackingException(
                     "Track translation failed", throwable)))
-            .doOnSuccess(dto -> log.info("Track translation success: {}", dto))
-            .switchIfEmpty(Mono.error(new TranslateTrackingException(
-                "TranslationTrackingDto is null")));
+            .doOnSuccess(dto -> log.info("Track translation success: {}", dto));
     }
 
     /**

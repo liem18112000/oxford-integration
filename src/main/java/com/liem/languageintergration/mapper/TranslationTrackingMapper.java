@@ -2,12 +2,14 @@ package com.liem.languageintergration.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.liem.languageintergration.dto.oxford.EntryDto;
 import com.liem.languageintergration.dto.oxford.TranslationDto;
 import com.liem.languageintergration.dto.responses.TranslationResponseDto;
 import com.liem.languageintergration.dto.tracking.TranslationTrackingDto;
 import com.liem.languageintergration.entity.TranslationTrackingEntity;
 import com.liem.languageintergration.excpetions.MappingException;
 import java.util.Optional;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor_={@Autowired})
 public class TranslationTrackingMapper {
 
+    /**
+     * The Object mapper.
+     */
     private final ObjectMapper objectMapper;
 
+    /**
+     * The Response mapper.
+     */
     private final TranslationResponseMapper responseMapper;
 
     /**
@@ -71,17 +79,25 @@ public class TranslationTrackingMapper {
 
     }
 
+    /**
+     * To dto translation tracking dto.
+     *
+     * @param dto      the dto
+     * @param entryDto the entry dto
+     * @return the translation tracking dto
+     */
     public TranslationTrackingDto toDto(
         final TranslationDto dto,
-        final String sourceLanguage) {
+        final @NotNull EntryDto entryDto) {
         return Optional.ofNullable(dto)
             .map(responseMapper::toResponse)
             .map(r -> {
                 final String translation = getTranslation(r);
                 return TranslationTrackingDto.builder()
-                    .sourceLanguage(sourceLanguage)
+                    .sourceLanguage(entryDto.getSourceLang())
+                    .targetLanguage(entryDto.getTargetLang())
                     .translation(translation)
-                    .wordInSourceLanguage(r.getWordInSourceLanguage())
+                    .wordInSourceLanguage(entryDto.getWordId())
                     .build();
             })
             .orElseGet(() -> {
@@ -90,6 +106,12 @@ public class TranslationTrackingMapper {
             });
     }
 
+    /**
+     * Gets translation.
+     *
+     * @param responseDto the response dto
+     * @return the translation
+     */
     private String getTranslation(TranslationResponseDto responseDto) {
         try {
             return this.objectMapper

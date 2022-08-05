@@ -4,7 +4,6 @@ import static com.liem.languageintergration.constants.ClientConstants.APP_ID_HEA
 import static com.liem.languageintergration.constants.ClientConstants.APP_KEY_HEADER_NAME;
 import static com.liem.languageintergration.constants.TranslationServiceRoute.TRANSLATIONS;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liem.languageintergration.config.IntegrationConfiguration;
 import com.liem.languageintergration.dto.oxford.EntryDto;
 import com.liem.languageintergration.dto.oxford.TranslationDto;
@@ -66,11 +65,6 @@ public class OxfordTranslationService
   private final ReactiveRedisTemplate<String, TranslationDto> redisTemplate;
 
   /**
-   * The Object mapper.
-   */
-  private final ObjectMapper objectMapper;
-
-  /**
    * Translate translation dto.
    *
    * @param entry the entry
@@ -93,7 +87,6 @@ public class OxfordTranslationService
                 .flatMap(dto -> this.trackingService.trackTranslation(
                         this.trackingMapper.toDto(dto, entry))
                     .map(res -> dto)
-                    .onErrorResume(Mono::error)
                 ).retry(retry)
                 .cache(cache)
                 .doOnSuccess(dto -> {
@@ -101,7 +94,6 @@ public class OxfordTranslationService
                   this.redisTemplate.opsForValue().set(cacheKey, dto, cache)
                       .doOnSuccess(e -> log.info("Cache value: {}", e)).subscribe();
                 })
-                .onErrorResume(Mono::error)
         ).doOnSuccess(value -> log.info("Get value from cache: {}", value));
   }
 
