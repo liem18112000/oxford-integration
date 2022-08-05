@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  description: oxford_integration API
+  title: oxford_integration API
+  version: 1.0.0
+servers:
+- url: https://oxford_integration
+paths:
+  /translate:
+    get:
+      operationId: translate
+      parameters:
+      - explode: true
+        in: query
+        name: sourceLang
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: targetLang
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: workId
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: OK
+      summary: GET translate
+      x-accepts: application/json
+  /translate/raw:
+    get:
+      operationId: translateRaw
+      parameters:
+      - explode: true
+        in: query
+        name: sourceLang
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: targetLang
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: workId
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: OK
+      summary: GET translate/raw
+      x-accepts: application/json
+components:
+  schemas: {}
+
