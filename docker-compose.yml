@@ -1,0 +1,53 @@
+version: '3.7'
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    networks:
+      - microservice
+    environment:
+      MONGO_INITDB_DATABASE: oxford-integration
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+
+  redis:
+    container_name: redis
+    image: bitnami/redis:latest
+    networks:
+      - microservice
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
+
+  oxford-integration:
+    container_name: oxford-integration
+    image: liem18112000/oxford-integration:1.0
+    depends_on:
+      - redis
+      - mongodb
+    build: .
+    restart: always
+    networks:
+      - microservice
+#    env_file: ./.env
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_HOST=mongodb
+      - REDIS_HOST=redis
+    stdin_open: true
+    tty: true
+
+networks:
+  microservice:
+    driver: bridge
+
+volumes:
+  mongodb:
+  cache:
