@@ -1,4 +1,4 @@
-package com.liem.languageintergration.service;
+package com.liem.languageintergration.service.domains;
 
 import org.springframework.data.domain.Page;
 import reactor.core.publisher.Mono;

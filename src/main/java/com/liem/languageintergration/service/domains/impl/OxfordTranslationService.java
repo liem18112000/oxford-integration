@@ -1,4 +1,4 @@
-package com.liem.languageintergration.service.impl;
+package com.liem.languageintergration.service.domains.impl;
 
 import static com.liem.languageintergration.constants.ClientConstants.APP_ID_HEADER_NAME;
 import static com.liem.languageintergration.constants.ClientConstants.APP_KEY_HEADER_NAME;
@@ -11,8 +11,8 @@ import com.liem.languageintergration.dto.tracking.TranslationTrackingDto;
 import com.liem.languageintergration.excpetions.TranslationException;
 import com.liem.languageintergration.factory.ClientFactory;
 import com.liem.languageintergration.mapper.TranslationTrackingMapper;
-import com.liem.languageintergration.service.TranslationService;
-import com.liem.languageintergration.service.TranslationTrackingCommandService;
+import com.liem.languageintergration.service.domains.TranslationService;
+import com.liem.languageintergration.service.utility.message.MessageSenderService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +21,6 @@ import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -51,9 +50,9 @@ public class OxfordTranslationService
   private final IntegrationConfiguration configuration;
 
   /**
-   * The Tracking service.
+   * The Message sender service.
    */
-  private final TranslationTrackingCommandService<TranslationTrackingDto> trackingService;
+  private final MessageSenderService<TranslationTrackingDto> messageSenderService;
 
   /**
    * The Tracking mapper.
@@ -85,10 +84,8 @@ public class OxfordTranslationService
                   throw new TranslationException(clientResponse.statusCode(), "Error client response");
                 })
                 .bodyToMono(TranslationDto.class)
-                .flatMap(dto -> this.trackingService.trackTranslation(
-                        this.trackingMapper.toDto(dto, entry))
-                    .map(res -> dto)
-                ).retry(retry)
+                .flatMap(dto -> trackTranslation(entry, dto))
+                .retry(retry)
                 .cache(cache)
                 .doOnSuccess(dto -> {
                   log.info("Request to Oxford success and cache value");
@@ -96,6 +93,21 @@ public class OxfordTranslationService
                       .doOnSuccess(e -> log.info("Cache value: {}", e)).subscribe();
                 })
         ).doOnSuccess(value -> log.info("Get value from cache: {}", value));
+  }
+
+  /**
+   * Track translation mono.
+   *
+   * @param entry the entry
+   * @param dto   the dto
+   * @return the mono
+   */
+  private Mono<TranslationDto> trackTranslation(
+      final @NotNull EntryDto entry,
+      final @NotNull TranslationDto dto) {
+    return Mono.just(this.messageSenderService
+        .send(this.trackingMapper.toDto(dto, entry)))
+        .map(res -> dto);
   }
 
   /**

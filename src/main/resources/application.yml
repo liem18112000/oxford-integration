@@ -27,6 +27,14 @@ integration:
   request-retry: 3
   cache-duration: 5m
 spring:
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USERNAME:guest}
+    password: ${RABBIT_USERNAME:guest}
+    queue: ${RABBIT_QUEUE:service.oxford-integration.queue}
+    exchange: ${RABBIT_EXCHANGE:service.oxford-integration.exchange}
+    routing-key: ${RABBIT_EXCHANGE:service.oxford-integration.routing-key}
   application:
     name: oxford-integration
   cache:

@@ -1,9 +1,9 @@
-package com.liem.languageintergration.service.impl;
+package com.liem.languageintergration.service.domains.impl;
 
 import com.liem.languageintergration.dto.tracking.TranslationTrackingDto;
 import com.liem.languageintergration.mapper.TranslationTrackingMapper;
 import com.liem.languageintergration.repository.TranslationTrackingRepository;
-import com.liem.languageintergration.service.TranslationTrackingQueryService;
+import com.liem.languageintergration.service.domains.TranslationTrackingQueryService;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

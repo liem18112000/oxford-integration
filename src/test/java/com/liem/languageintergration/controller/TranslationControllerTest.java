@@ -1,7 +1,5 @@
 package com.liem.languageintergration.controller;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,8 +13,8 @@ import com.liem.languageintergration.dto.responses.TranslationResponseDto;
 import com.liem.languageintergration.dto.tracking.TranslationTrackingDto;
 import com.liem.languageintergration.mapper.TranslationResponseMapper;
 import com.liem.languageintergration.repository.TranslationTrackingRepository;
-import com.liem.languageintergration.service.TranslationService;
-import com.liem.languageintergration.service.TranslationTrackingQueryService;
+import com.liem.languageintergration.service.domains.TranslationService;
+import com.liem.languageintergration.service.domains.TranslationTrackingQueryService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

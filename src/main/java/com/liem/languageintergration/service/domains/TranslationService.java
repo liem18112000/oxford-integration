@@ -1,4 +1,4 @@
-package com.liem.languageintergration.service;
+package com.liem.languageintergration.service.domains;
 
 import reactor.core.publisher.Mono;
 
