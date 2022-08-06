@@ -1,5 +1,7 @@
 package com.liem.languageintergration.excpetions;
 
+import com.liem.languageintergration.dto.oxford.EntryDto;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -9,12 +11,20 @@ import org.springframework.web.server.ResponseStatusException;
 public class TranslationException extends ResponseStatusException {
 
   /**
+   * The Entry.
+   */
+  @Getter
+  private EntryDto entry;
+
+  /**
    * Instantiates a new Translation exception.
    *
    * @param status the status
+   * @param entry  the entry
    */
-  public TranslationException(HttpStatus status) {
+  public TranslationException(HttpStatus status, EntryDto entry) {
     super(status);
+    this.entry = entry;
   }
 
   /**
@@ -22,30 +32,10 @@ public class TranslationException extends ResponseStatusException {
    *
    * @param status the status
    * @param reason the reason
+   * @param entry  the entry
    */
-  public TranslationException(HttpStatus status, String reason) {
+  public TranslationException(HttpStatus status, String reason, EntryDto entry) {
     super(status, reason);
-  }
-
-  /**
-   * Instantiates a new Translation exception.
-   *
-   * @param status the status
-   * @param reason the reason
-   * @param cause  the cause
-   */
-  public TranslationException(HttpStatus status, String reason, Throwable cause) {
-    super(status, reason, cause);
-  }
-
-  /**
-   * Instantiates a new Translation exception.
-   *
-   * @param rawStatusCode the raw status code
-   * @param reason        the reason
-   * @param cause         the cause
-   */
-  public TranslationException(int rawStatusCode, String reason, Throwable cause) {
-    super(rawStatusCode, reason, cause);
+    this.entry = entry;
   }
 }

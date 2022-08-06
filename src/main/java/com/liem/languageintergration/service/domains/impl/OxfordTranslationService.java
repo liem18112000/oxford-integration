@@ -81,7 +81,8 @@ public class OxfordTranslationService
             makeRequest(entry)
                 .onStatus(status -> !status.is2xxSuccessful(), clientResponse -> {
                   log.error("Error client response: {}", clientResponse);
-                  throw new TranslationException(clientResponse.statusCode(), "Error client response");
+                  throw new TranslationException(clientResponse.statusCode(),
+                      "Error client response", entry);
                 })
                 .bodyToMono(TranslationDto.class)
                 .flatMap(dto -> trackTranslation(entry, dto))
@@ -128,7 +129,8 @@ public class OxfordTranslationService
       uri = new URI(baseUrl);
     } catch (URISyntaxException ex) {
       log.error("Create URI failed with base url '{}' : {}", baseUrl, ex.getMessage());
-      throw new TranslationException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+      throw new TranslationException(HttpStatus.INTERNAL_SERVER_ERROR,
+          ex.getMessage(), entry);
     }
 
     return webClient

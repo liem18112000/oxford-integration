@@ -45,18 +45,18 @@ public class TranslationTrackingDto implements Serializable {
    * The Is translated success.
    */
   @Builder.Default
-    protected boolean translatedSuccess = true;
+  protected boolean translatedSuccess = true;
 
   /**
    * The Extra information.
    */
   @Builder.Default
-    protected String extraInformation = ApiResponseCode.SUCCESS.getMessage();
+  protected String extraInformation = ApiResponseCode.SUCCESS.getMessage();
 
   /**
    * The Translated at.
    */
   @Builder.Default
-    protected String translatedAt = LocalDateTime.now().toString();
+  protected String translatedAt = LocalDateTime.now().toString();
 
 }
